@@ -129,10 +129,41 @@ body {
     background-color: var(--navy-blue);
     border-color: var(--navy-blue);
     color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(18, 55, 93, 0.2);
 }
+
+.btn-navy::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-navy:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
 .btn-navy:hover {
     background-color: #0e2b46;
     border-color: #0e2b46;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(18, 55, 93, 0.4);
+}
+
+.btn-navy:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(18, 55, 93, 0.3);
 }
 
 .table-dark.bg-navy {
@@ -165,10 +196,157 @@ body {
 
 /* Custom Button Primary Style (jika ada) */
 .btn-primary {
-    background-color: #12375d; /* Biru Navy */
-    border-color: #12375d; /* Biru Navy */
+    background-color: #12375d;
+    border-color: #12375d;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(18, 55, 93, 0.2);
 }
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
 .btn-primary:hover {
-    background-color: #0e2b46; /* Sedikit lebih gelap saat hover */
+    background-color: #0e2b46;
     border-color: #0e2b46;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(18, 55, 93, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(18, 55, 93, 0.3);
+}
+
+/* Animated Button Styles for All Bootstrap Buttons */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    transform: translateY(0);
+    z-index: 1;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: -1;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+}
+
+.btn:active {
+    transform: translateY(-1px);
+}
+
+/* Ensure button text is visible */
+.btn > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Danger Button Animation */
+.btn-danger {
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+}
+
+.btn-danger:hover {
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+}
+
+.btn-danger:active {
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* Secondary Button Animation */
+.btn-secondary {
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
+}
+
+.btn-secondary:hover {
+    box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+}
+
+.btn-secondary:active {
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+/* Success Button Animation */
+.btn-success {
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
+}
+
+.btn-success:hover {
+    box-shadow: 0 8px 25px rgba(25, 135, 84, 0.4);
+}
+
+.btn-success:active {
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+}
+
+/* Warning Button Animation */
+.btn-warning {
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+}
+
+.btn-warning:hover {
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+}
+
+.btn-warning:active {
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+/* Info Button Animation */
+.btn-info {
+    box-shadow: 0 4px 15px rgba(13, 202, 240, 0.2);
+}
+
+.btn-info:hover {
+    box-shadow: 0 8px 25px rgba(13, 202, 240, 0.4);
+}
+
+.btn-info:active {
+    box-shadow: 0 4px 15px rgba(13, 202, 240, 0.3);
+}
+
+/* Small Button Adjustments */
+.btn-sm:hover {
+    transform: translateY(-2px);
+}
+
+.btn-sm:active {
+    transform: translateY(-1px);
 }

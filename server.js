@@ -78,7 +78,7 @@ app.get('/api/laptops', async (req, res) => {
                 l.merek, 
                 l.id_mahasiswa as idMahasiswaPemilik, -- New: owner's ID
                 m.nama_mahasiswa as namaPemilik     -- New: owner's name from mahasiswas
-            FROM laptop l
+            FROM laptops l
             LEFT JOIN mahasiswas m ON l.id_mahasiswa = m.id_mahasiswa
         `);
         res.json(rows);
@@ -92,7 +92,7 @@ app.get('/api/laptops', async (req, res) => {
 app.post('/api/laptops', async (req, res) => {
     const { id, merek, idMahasiswaPemilik } = req.body; // Removed prodi
     try {
-        const [existing] = await pool.query('SELECT id_laptop FROM laptop WHERE id_laptop = ?', [id]);
+        const [existing] = await pool.query('SELECT id_laptop FROM laptops WHERE id_laptop = ?', [id]);
         if (existing.length > 0) {
             return res.status(400).json({ message: 'ID Laptop sudah ada.' });
         }
@@ -104,7 +104,7 @@ app.post('/api/laptops', async (req, res) => {
             }
         }
         
-        await pool.query('INSERT INTO laptop (id_laptop, merek, id_mahasiswa) VALUES (?, ?, ?)', [id, merek, idMahasiswaPemilik]); // Removed prodi
+        await pool.query('INSERT INTO laptops (id_laptop, merek, id_mahasiswa) VALUES (?, ?, ?)', [id, merek, idMahasiswaPemilik]); // Removed prodi
         res.status(201).json({ message: 'Laptop berhasil ditambahkan', laptop: { id, merek, idMahasiswaPemilik } }); // Removed prodi
     } catch (err) {
         console.error('Error adding laptop:', err); // Log full error object
@@ -124,7 +124,7 @@ app.put('/api/laptops/:id', async (req, res) => {
                 return res.status(400).json({ message: 'ID Mahasiswa Pemilik tidak terdaftar.' });
             }
         }
-        const [result] = await pool.query('UPDATE laptop SET merek = ?, id_mahasiswa = ? WHERE id_laptop = ?', [merek, idMahasiswaPemilik, laptopId]); // Removed prodi
+        const [result] = await pool.query('UPDATE laptops SET merek = ?, id_mahasiswa = ? WHERE id_laptop = ?', [merek, idMahasiswaPemilik, laptopId]); // Removed prodi
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Laptop tidak ditemukan.' });
         }
@@ -139,7 +139,7 @@ app.put('/api/laptops/:id', async (req, res) => {
 app.delete('/api/laptops/:id', async (req, res) => {
     const laptopId = req.params.id;
     try {
-        const [result] = await pool.query('DELETE FROM laptop WHERE id_laptop = ?', [laptopId]);
+        const [result] = await pool.query('DELETE FROM laptops WHERE id_laptop = ?', [laptopId]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Laptop tidak ditemukan.' });
         }
@@ -164,7 +164,7 @@ app.get('/database-mahasiswas', (req, res) => {
 // GET all projectors
 app.get('/api/projectors', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT id_proyektor as id, merek, milik FROM proyektor');
+        const [rows] = await pool.query('SELECT id_proyektor as id, merek, milik FROM proyektors');
         res.json(rows);
     } catch (err) {
         console.error('Error fetching projectors:', err);
@@ -176,12 +176,12 @@ app.get('/api/projectors', async (req, res) => {
 app.post('/api/projectors', async (req, res) => {
     const { id, merek, milik } = req.body;
     try {
-        const [existing] = await pool.query('SELECT id_proyektor FROM proyektor WHERE id_proyektor = ?', [id]);
+        const [existing] = await pool.query('SELECT id_proyektor FROM proyektors WHERE id_proyektor = ?', [id]);
         if (existing.length > 0) {
             return res.status(400).json({ message: 'ID Proyektor sudah ada.' });
         }
         
-        await pool.query('INSERT INTO proyektor (id_proyektor, merek, milik) VALUES (?, ?, ?)', [id, merek, milik]);
+        await pool.query('INSERT INTO proyektors (id_proyektor, merek, milik) VALUES (?, ?, ?)', [id, merek, milik]);
         res.status(201).json({ message: 'Proyektor berhasil ditambahkan', projector: { id, merek, milik } });
     } catch (err) {
         console.error('Error adding projector:', err);
@@ -194,7 +194,7 @@ app.put('/api/projectors/:id', async (req, res) => {
     const projectorId = req.params.id;
     const { merek, milik } = req.body;
     try {
-        const [result] = await pool.query('UPDATE proyektor SET merek = ?, milik = ? WHERE id_proyektor = ?', [merek, milik, projectorId]);
+        const [result] = await pool.query('UPDATE proyektors SET merek = ?, milik = ? WHERE id_proyektor = ?', [merek, milik, projectorId]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Proyektor tidak ditemukan.' });
         }
@@ -209,7 +209,7 @@ app.put('/api/projectors/:id', async (req, res) => {
 app.delete('/api/projectors/:id', async (req, res) => {
     const projectorId = req.params.id;
     try {
-        const [result] = await pool.query('DELETE FROM proyektor WHERE id_proyektor = ?', [projectorId]);
+        const [result] = await pool.query('DELETE FROM proyektors WHERE id_proyektor = ?', [projectorId]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Proyektor tidak ditemukan.' });
         }
@@ -273,10 +273,10 @@ app.delete('/api/mahasiswas/:id_mahasiswa', async (req, res) => {
         await connection.beginTransaction(); // Start transaction
 
         // 1. Delete related loans (peminjaman) where the student is the borrower
-        await connection.query('DELETE FROM peminjaman WHERE id_mahasiswa = ?', [mahasiswaId]);
+        await connection.query('DELETE FROM peminjamans WHERE id_mahasiswa = ?', [mahasiswaId]);
 
         // 2. Delete related laptops owned by the student
-        await connection.query('DELETE FROM laptop WHERE id_mahasiswa = ?', [mahasiswaId]);
+        await connection.query('DELETE FROM laptops WHERE id_mahasiswa = ?', [mahasiswaId]);
 
         // 3. Delete the student (mahasiswa)
         const [result] = await connection.query('DELETE FROM mahasiswas WHERE id_mahasiswa = ?', [mahasiswaId]);
@@ -308,9 +308,9 @@ app.get('/api/projectors/available', async (req, res) => {
 
         const query = `
 
-            SELECT p.id_proyektor FROM proyektor p
+            SELECT p.id_proyektor FROM proyektors p
 
-            LEFT JOIN peminjaman l ON p.id_proyektor = l.id_perangkat AND l.status = 'active'
+            LEFT JOIN peminjamans l ON p.id_proyektor = l.id_perangkat AND l.status = 'active'
 
             WHERE l.id_peminjaman IS NULL
 
@@ -395,9 +395,9 @@ app.get('/api/loans', async (req, res) => {
               p.waktu_kembali as returnedAt, 
               p.status,
               COALESCE(p.nama_pemilik_perangkat, proj.milik) AS deviceOwnerName
-          FROM peminjaman p
+          FROM peminjamans p
           JOIN mahasiswas m_borrower ON p.id_mahasiswa = m_borrower.id_mahasiswa
-          LEFT JOIN proyektor proj ON p.id_perangkat = proj.id_proyektor AND p.tipe_perangkat = 'Proyektor'
+          LEFT JOIN proyektors proj ON p.id_perangkat = proj.id_proyektor AND p.tipe_perangkat = 'Proyektor'
           ORDER BY p.waktu_pinjam DESC
       `);
       res.json(rows);
@@ -433,8 +433,8 @@ app.post('/api/loans', async (req, res) => {
         if (deviceType === 'Laptop') {
             // Find an available laptop owned by this student
             const [availableLaptops] = await pool.query(`
-                SELECT l.id_laptop, l.id_mahasiswa FROM laptop l
-                LEFT JOIN peminjaman p ON l.id_laptop = p.id_perangkat AND p.tipe_perangkat = 'Laptop' AND p.status = 'active'
+                SELECT l.id_laptop, l.id_mahasiswa FROM laptops l
+                LEFT JOIN peminjamans p ON l.id_laptop = p.id_perangkat AND p.tipe_perangkat = 'Laptop' AND p.status = 'active'
                 WHERE p.id_peminjaman IS NULL AND l.id_mahasiswa = ? LIMIT 1
             `, [id_mahasiswa]);
 
@@ -455,7 +455,7 @@ app.post('/api/loans', async (req, res) => {
             if (!deviceId) {
                 return res.status(400).json({ message: 'ID Proyektor harus dipilih.' });
             }
-            const [projectors] = await pool.query('SELECT id_proyektor FROM proyektor WHERE id_proyektor = ?', [deviceId]);
+            const [projectors] = await pool.query('SELECT id_proyektor FROM proyektors WHERE id_proyektor = ?', [deviceId]);
             if (projectors.length === 0) {
                 return res.status(400).json({ message: 'ID Proyektor tidak terdaftar.' });
             }
@@ -464,13 +464,13 @@ app.post('/api/loans', async (req, res) => {
 
         // 3. Cek apakah perangkat sedang dipinjam (this check is effectively done by the availableLaptops query above for Laptops)
         // Re-check for both device types for robustness if deviceId was not auto-assigned
-        const [activeLoans] = await pool.query("SELECT id_peminjaman FROM peminjaman WHERE id_perangkat = ? AND status = 'active'", [deviceId]);
+        const [activeLoans] = await pool.query("SELECT id_peminjaman FROM peminjamans WHERE id_perangkat = ? AND status = 'active'", [deviceId]);
         if (activeLoans.length > 0) {
             return res.status(400).json({ message: `Perangkat dengan ID ${deviceId} sedang dipinjam.` });
         }
 
         // 4. Cek apakah user punya peminjaman yang sudah dikembalikan (untuk reaktivasi)
-        const [returnedLoans] = await pool.query("SELECT id_peminjaman FROM peminjaman WHERE id_mahasiswa = ? AND id_perangkat = ? AND status = 'returned' ORDER BY waktu_kembali DESC LIMIT 1", [id_mahasiswa, deviceId]);
+        const [returnedLoans] = await pool.query("SELECT id_peminjaman FROM peminjamans WHERE id_mahasiswa = ? AND id_perangkat = ? AND status = 'returned' ORDER BY waktu_kembali DESC LIMIT 1", [id_mahasiswa, deviceId]);
         if (returnedLoans.length > 0) {
             const loanToReactivateId = returnedLoans[0].id_peminjaman;
             let updateNamaPemilik = '';
@@ -478,7 +478,7 @@ app.post('/api/loans', async (req, res) => {
 
             // Update nama_pemilik_perangkat if device is Laptop during reactivation
             if (deviceType === 'Laptop') {
-                 const [laptops] = await pool.query('SELECT id_mahasiswa FROM laptop WHERE id_laptop = ?', [deviceId]);
+                 const [laptops] = await pool.query('SELECT id_mahasiswa FROM laptops WHERE id_laptop = ?', [deviceId]);
                  if (laptops.length > 0 && laptops[0].id_mahasiswa) {
                      const [ownerMahasiswaRows] = await pool.query('SELECT nama_mahasiswa FROM mahasiswas WHERE id_mahasiswa = ?', [laptops[0].id_mahasiswa]);
                      if (ownerMahasiswaRows.length > 0) {
@@ -489,14 +489,14 @@ app.post('/api/loans', async (req, res) => {
             // Always update nama_peminjam during reactivation
             updateNamaPeminjam = `, nama_peminjam = '${namaPeminjam}'`;
 
-            await pool.query(`UPDATE peminjaman SET waktu_pinjam = NOW(), waktu_kembali = NULL, status = 'active'${updateNamaPemilik}${updateNamaPeminjam} WHERE id_peminjaman = ?`, [loanToReactivateId]);
+            await pool.query(`UPDATE peminjamans SET waktu_pinjam = NOW(), waktu_kembali = NULL, status = 'active'${updateNamaPemilik}${updateNamaPeminjam} WHERE id_peminjaman = ?`, [loanToReactivateId]);
             broadcastToAdmins({ type: 'loan_updated' });
             return res.status(200).json({ message: 'Peminjaman berhasil diaktifkan kembali.' });
         }
 
         // 5. Jika tidak ada, buat peminjaman baru
         const [result] = await pool.query(
-            "INSERT INTO peminjaman (id_mahasiswa, tipe_perangkat, id_perangkat, waktu_pinjam, status, nama_pemilik_perangkat, nama_peminjam) VALUES (?, ?, ?, NOW(), 'active', ?, ?)",
+            "INSERT INTO peminjamans (id_mahasiswa, tipe_perangkat, id_perangkat, waktu_pinjam, status, nama_pemilik_perangkat, nama_peminjam) VALUES (?, ?, ?, NOW(), 'active', ?, ?)",
             [id_mahasiswa, deviceType, deviceId, namaPemilikPerangkat, namaPeminjam]
         );
         broadcastToAdmins({ type: 'loan_updated' });
@@ -524,7 +524,7 @@ app.get('/api/loans/active/:id_mahasiswa', async (req, res) => {
                 tipe_perangkat as device, 
                 id_perangkat as deviceId, 
                 status 
-            FROM peminjaman 
+            FROM peminjamans
             WHERE id_mahasiswa = ? AND tipe_perangkat = ? AND status IN ('active', 'pending_extension')
         `, [req.params.id_mahasiswa, deviceType]);
 
@@ -551,7 +551,7 @@ app.put('/api/loans/:id', async (req, res) => {
 
         try {
 
-            const [result] = await pool.query("UPDATE peminjaman SET status = 'returned', waktu_kembali = NOW() WHERE id_peminjaman = ?", [req.params.id]);
+            const [result] = await pool.query("UPDATE peminjamans SET status = 'returned', waktu_kembali = NOW() WHERE id_peminjaman = ?", [req.params.id]);
 
             if (result.affectedRows === 0) {
 
@@ -587,7 +587,7 @@ app.post('/api/loans/:id/request-reloan', async (req, res) => {
 
     try {
 
-        const [result] = await pool.query("UPDATE peminjaman SET status = 'pending_extension' WHERE id_peminjaman = ? AND status = 'active'", [req.params.id]);
+        const [result] = await pool.query("UPDATE peminjamans SET status = 'pending_extension' WHERE id_peminjaman = ? AND status = 'active'", [req.params.id]);
 
         if (result.affectedRows === 0) {
 
@@ -625,7 +625,7 @@ app.post('/api/loans/:id/confirm-reloan', async (req, res) => {
 
         // 1. Dapatkan data peminjaman lama
 
-        const [loans] = await connection.query("SELECT * FROM peminjaman WHERE id_peminjaman = ? AND status = 'pending_extension' FOR UPDATE", [req.params.id]);
+        const [loans] = await connection.query("SELECT * FROM peminjamans WHERE id_peminjaman = ? AND status = 'pending_extension' FOR UPDATE", [req.params.id]);
 
         if (loans.length === 0) {
 
@@ -655,7 +655,7 @@ app.post('/api/loans/:id/confirm-reloan', async (req, res) => {
 
         if (originalLoan.tipe_perangkat === 'Laptop') {
 
-            const [laptops] = await connection.query('SELECT id_mahasiswa FROM laptop WHERE id_laptop = ?', [originalLoan.id_perangkat]);
+            const [laptops] = await connection.query('SELECT id_mahasiswa FROM laptops WHERE id_laptop = ?', [originalLoan.id_perangkat]);
 
             if (laptops.length > 0 && laptops[0].id_mahasiswa) {
 
@@ -677,7 +677,7 @@ app.post('/api/loans/:id/confirm-reloan', async (req, res) => {
 
 
 
-                await connection.query("UPDATE peminjaman SET status = 'active', waktu_pinjam = NOW(), waktu_kembali = NULL WHERE id_peminjaman = ?", [req.params.id]);
+                await connection.query("UPDATE peminjamans SET status = 'active', waktu_pinjam = NOW(), waktu_kembali = NULL WHERE id_peminjaman = ?", [req.params.id]);
 
 
 
@@ -733,7 +733,7 @@ app.delete('/api/loans/:id', async (req, res) => {
 
     try {
 
-        const [result] = await pool.query("DELETE FROM peminjaman WHERE id_peminjaman = ?", [req.params.id]);
+        const [result] = await pool.query("DELETE FROM peminjamans WHERE id_peminjaman = ?", [req.params.id]);
 
         if (result.affectedRows === 0) {
 
@@ -755,7 +755,91 @@ app.delete('/api/loans/:id', async (req, res) => {
 
 });
 
+// --- Riwayat/History Endpoints ---
 
+// GET riwayat peminjaman dengan filter tanggal
+app.get('/api/history', async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        let query = `
+            SELECT
+                p.id_peminjaman as id,
+                p.id_mahasiswa as studentId,
+                m_borrower.nama_mahasiswa as borrowerName,
+                p.tipe_perangkat as device,
+                p.id_perangkat as deviceId,
+                p.waktu_pinjam as borrowedAt,
+                p.waktu_kembali as returnedAt,
+                p.status,
+                COALESCE(p.nama_pemilik_perangkat, proj.milik) AS deviceOwnerName,
+                DATE(p.waktu_pinjam) as tanggalPinjam
+            FROM peminjamans p
+            JOIN mahasiswas m_borrower ON p.id_mahasiswa = m_borrower.id_mahasiswa
+            LEFT JOIN proyektors proj ON p.id_perangkat = proj.id_proyektor AND p.tipe_perangkat = 'Proyektor'
+        `;
+
+        const params = [];
+
+        if (startDate && endDate) {
+            query += ` WHERE DATE(p.waktu_pinjam) BETWEEN ? AND ?`;
+            params.push(startDate, endDate);
+        } else if (startDate) {
+            query += ` WHERE DATE(p.waktu_pinjam) >= ?`;
+            params.push(startDate);
+        } else if (endDate) {
+            query += ` WHERE DATE(p.waktu_pinjam) <= ?`;
+            params.push(endDate);
+        }
+
+        query += ` ORDER BY p.waktu_pinjam DESC`;
+
+        const [rows] = await pool.query(query, params);
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching history:', err);
+        res.status(500).json({ message: 'Gagal mengambil data riwayat.' });
+    }
+});
+
+// GET statistik peminjaman per hari
+app.get('/api/history/stats', async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        let query = `
+            SELECT
+                DATE(p.waktu_pinjam) as tanggal,
+                COUNT(*) as totalPeminjaman,
+                SUM(CASE WHEN p.tipe_perangkat = 'Laptop' THEN 1 ELSE 0 END) as totalLaptop,
+                SUM(CASE WHEN p.tipe_perangkat = 'Proyektor' THEN 1 ELSE 0 END) as totalProyektor,
+                SUM(CASE WHEN p.status = 'returned' THEN 1 ELSE 0 END) as totalDikembalikan,
+                SUM(CASE WHEN p.status = 'active' THEN 1 ELSE 0 END) as totalAktif
+            FROM peminjamans p
+        `;
+
+        const params = [];
+
+        if (startDate && endDate) {
+            query += ` WHERE DATE(p.waktu_pinjam) BETWEEN ? AND ?`;
+            params.push(startDate, endDate);
+        } else if (startDate) {
+            query += ` WHERE DATE(p.waktu_pinjam) >= ?`;
+            params.push(startDate);
+        } else if (endDate) {
+            query += ` WHERE DATE(p.waktu_pinjam) <= ?`;
+            params.push(endDate);
+        }
+
+        query += ` GROUP BY DATE(p.waktu_pinjam) ORDER BY tanggal DESC`;
+
+        const [rows] = await pool.query(query, params);
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching stats:', err);
+        res.status(500).json({ message: 'Gagal mengambil data statistik.' });
+    }
+});
 
 
 app.listen(port, () => {
