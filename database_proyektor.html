@@ -126,8 +126,8 @@
                 proyektorTableBody.insertRow().innerHTML = `
                     <td>${p.id}</td><td>${p.merek}</td><td>${p.milik}</td>
                     <td>
-                        <button class="btn btn-navy btn-sm" onclick='editProyektor(${JSON.stringify(p)})'>Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteProyektor('${p.id}')">Hapus</button>
+                        <button class="btn btn-navy btn-sm" onclick='editProyektor(${JSON.stringify(p)})'><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProyektor('${p.id}')"><i class="bi bi-trash-fill"></i></button>
                     </td>`;
             });
         }

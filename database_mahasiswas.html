@@ -145,8 +145,8 @@
                     <td>${mahasiswa.nama_mahasiswa}</td>
                     <td>${mahasiswa.prodi}</td>
                     <td>
-                        <button class="btn btn-navy btn-sm" onclick='editMahasiswa(${JSON.stringify(mahasiswa)})'>Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteMahasiswa('${mahasiswa.id_mahasiswa}')">Hapus</button>
+                        <button class="btn btn-navy btn-sm" onclick='editMahasiswa(${JSON.stringify(mahasiswa)})'><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteMahasiswa('${mahasiswa.id_mahasiswa}')"><i class="bi bi-trash-fill"></i></button>
                     </td>`;
             });
         }

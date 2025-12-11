@@ -127,8 +127,8 @@
                 row.innerHTML = `
                     <td>${laptop.id}</td><td>${laptop.merek}</td><td>${laptop.namaPemilik || 'N/A'}</td>
                     <td>
-                        <button class="btn btn-navy btn-sm" onclick='editLaptop(${JSON.stringify(laptop)})'>Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteLaptop('${laptop.id}')">Hapus</button>
+                        <button class="btn btn-navy btn-sm" onclick='editLaptop(${JSON.stringify(laptop)})'><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteLaptop('${laptop.id}')"><i class="bi bi-trash-fill"></i></button>
                     </td>`;
             });
         }
