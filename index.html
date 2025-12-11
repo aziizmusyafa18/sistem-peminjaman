@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAB ITAMA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="pt-5">
+
+    <!-- Navbar Section -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="bi bi-pc-display"></i></i> LAB ITAMA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html"><i class="fa-solid fa-house"></i> Menu Utama</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="aturan.html"><i class="fa-solid fa-scroll"></i> Aturan Lab</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Section -->
+    <div class="container mt-4 text-center" id="menu-utama">
+        <h1>Selamat Datang di Sistem Manajemen Lab</h1>
+    </div>
+
+    <!-- Device Selection Section -->
+    <div class="container mt-5" id="perangkat-menu">
+        <h2 class="text-center mb-4">Pilih Perangkat</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-5 mb-4">
+                <div class="card h-100" data-device="Laptop">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fa-solid fa-laptop"></i> Laptop</h5>
+                        <p class="card-text">Silahkan Klik Untuk Scan</p>
+                        <a href="#" class="btn btn-primary pilih-btn">Pilih</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 mb-4">
+                <div class="card h-100" data-device="Proyektor">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fa-solid fa-video"></i> Proyektor <span id="projector-stock" class="badge bg-secondary"></span></h5>
+                        <p class="card-text">Silahkan Klik Untuk Scan</p>
+                        <a href="#" class="btn btn-primary pilih-btn">Pilih</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scan Card Section -->
+    <div class="container mt-5 text-center hidden" id="scan-kartu-menu">
+        <h2>Silahkan Scan Kartu Anda</h2>
+        <i class="fa-solid fa-id-card fa-10x text-muted mb-3"></i>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <input type="text" class="form-control text-center" id="card-input" placeholder="Ketik ID Anda lalu tekan Enter">
+            </div>
+        </div>
+        <br>
+        <button class="btn btn-secondary mt-2" id="kembali-btn">Kembali</button>
+    </div>
+
+    <!-- Existing Loan Options Menu -->
+    <div class="container mt-5 text-center hidden" id="existing-loan-menu">
+        <h2>Anda memiliki peminjaman aktif.</h2>
+        <p>Perangkat: <strong id="active-loan-device"></strong></p>
+        <p>Silahkan pilih tindakan selanjutnya:</p>
+        <button class="btn btn-success" id="return-loan-btn">Kembalikan Perangkat</button>
+        <button class="btn btn-warning" id="reloan-request-btn">Ajukan Lanjut Pinjam</button>
+        <button class="btn btn-secondary mt-2" id="cancel-action-btn">Batal</button>
+    </div>
+
+    <!-- Waiting for Admin Confirmation Menu -->
+    <div class="container mt-5 text-center hidden" id="waiting-admin-menu">
+        <h2>Permintaan perpanjangan pinjaman telah dikirim.</h2>
+        <p>Menunggu konfirmasi dari admin...</p>
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+
+    <!-- Projector Selection Modal -->
+    <div class="modal fade" id="projectorSelectionModal" tabindex="-1" aria-labelledby="projectorSelectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="projectorSelectionModalLabel">Pilih ID Proyektor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group" id="availableProjectorsList">
+                        <!-- Available projectors will be loaded here -->
+                    </ul>
+                    <p id="noProjectorsMessage" class="text-muted mt-3 hidden">Tidak ada proyektor yang tersedia saat ini.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- JavaScript Section -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // UI Elements
+                const perangkatMenu = document.getElementById('perangkat-menu');
+                const scanKartuMenu = document.getElementById('scan-kartu-menu');
+                const existingLoanMenu = document.getElementById('existing-loan-menu');
+                const waitingAdminMenu = document.getElementById('waiting-admin-menu');
+                const cardInput = document.getElementById('card-input');
+                
+                // Modal Elements
+                const projectorSelectionModal = new bootstrap.Modal(document.getElementById('projectorSelectionModal'));
+                const availableProjectorsList = document.getElementById('availableProjectorsList');
+                const noProjectorsMessage = document.getElementById('noProjectorsMessage');
+    
+                // Buttons & Links
+                const pilihButtons = document.querySelectorAll('.pilih-btn');
+                const kembaliBtn = document.getElementById('kembali-btn');
+                const returnLoanBtn = document.getElementById('return-loan-btn');
+                const reloanRequestBtn = document.getElementById('reloan-request-btn');
+                const cancelActionBtn = document.getElementById('cancel-action-btn');
+                
+                let selectedDeviceType = '';
+                let selectedDeviceId = '';
+                let scannedStudentId = ''; // Store student ID after scan
+                let activeLoan = null;
+                let eventSource = null;
+    
+                pilihButtons.forEach(button => {
+                    button.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        const card = event.target.closest('.card');
+                        selectedDeviceType = card.dataset.device;
+                        // Always go to scan screen first
+                        showScreen('scan'); 
+                    });
+                });
+    
+                kembaliBtn.addEventListener('click', () => resetUI());
+                cancelActionBtn.addEventListener('click', resetUI);
+    
+                cardInput.addEventListener('keydown', async function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        scannedStudentId = cardInput.value.trim(); // Store the scanned ID
+                        if (!scannedStudentId) {
+                            alert('Silahkan masukkan ID pengguna.');
+                            return;
+                        }
+                        await checkActiveLoan(scannedStudentId);
+                    }
+                });
+    
+                returnLoanBtn.addEventListener('click', handleReturnLoan);
+                reloanRequestBtn.addEventListener('click', handleReloanRequest);
+    
+                // --- Functions ---
+    
+                async function checkActiveLoan(studentId) {
+                    try {
+                        const response = await fetch(`/api/loans/active/${studentId}?deviceType=${selectedDeviceType}`);
+                        if (response.ok) {
+                            activeLoan = await response.json();
+                            document.getElementById('active-loan-device').textContent = activeLoan.device;
+                            showScreen('existing');
+                        } else {
+                            // No active loan for this device type, proceed with new loan process
+                            if (selectedDeviceType === 'Proyektor') {
+                                // For projectors, show selection modal now
+                                showProjectorSelectionModal();
+                            } else {
+                                // For laptops, create loan directly
+                                await createLoan(studentId, selectedDeviceType, null);
+                            }
+                        }
+                    }
+                    catch (error) {
+                        console.error('Error checking active loan:', error);
+                        alert('Gagal memeriksa status peminjaman.');
+                    }
+                }
+    
+                async function createLoan(studentId, deviceType, deviceId) {
+                    try {
+                        const response = await fetch('/api/loans', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id_mahasiswa: studentId, deviceType, deviceId })
+                        });
+                        const data = await response.json();
+                        if (!response.ok) {
+                            throw new Error(data.message);
+                        }
+                        alert(data.message);
+                        resetUI();
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert(error.message || 'Terjadi kesalahan saat mencatat peminjaman.');
+                        resetUI();
+                    }
+                }
+    
+                async function handleReturnLoan() {
+                    if (!activeLoan) return;
+                    try {
+                        const response = await fetch(`/api/loans/${activeLoan.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ returnedAt: new Date().toISOString() })
+                        });
+                        await response.json();
+                        alert('Perangkat berhasil dikembalikan.');
+                        resetUI();
+                    } catch (error) {
+                            console.error('Error returning loan:', error);
+                            alert('Gagal mengembalikan perangkat.');
+                        }
+                    }
+    
+                async function handleReloanRequest() {
+                    if (!activeLoan) return;
+                    try {
+                        const response = await fetch(`/api/loans/${activeLoan.id}/request-reloan`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({})
+                        });
+                        const data = await response.json();
+                        if (!response.ok) {
+                            throw new Error(data.message);
+                        }
+                        showScreen('waiting');
+                        listenForConfirmation(activeLoan.studentId);
+                    } catch (error) {
+                        console.error('Error requesting reloan:', error);
+                        alert(error.message || 'Gagal mengajukan permintaan lanjut pinjam.');
+                    }
+                }
+    
+                function listenForConfirmation(id_mahasiswa) {
+                    eventSource = new EventSource(`/api/events?userId=${id_mahasiswa}`);
+                    eventSource.onmessage = function(event) {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'reloan_confirmed') {
+                            alert(`Perpanjangan pinjaman Anda untuk perangkat ${data.device} telah dikonfirmasi oleh admin.`);
+                            resetUI();
+                        }
+                    };
+                    eventSource.onerror = function(err) {
+                        console.error("EventSource failed:", err);
+                        alert("Koneksi ke server terputus, silahkan coba lagi.");
+                        resetUI();
+                    };
+                }
+    
+                function showScreen(screenName) {
+                    perangkatMenu.style.display = 'none';
+                    scanKartuMenu.style.display = 'none';
+                    existingLoanMenu.style.display = 'none';
+                    waitingAdminMenu.style.display = 'none';
+    
+                    if (screenName === 'perangkat') {
+                        perangkatMenu.style.display = 'block';
+                    } else if (screenName === 'scan') {
+                        scanKartuMenu.style.display = 'block';
+                        cardInput.focus();
+                    } else if (screenName === 'existing') {
+                        existingLoanMenu.style.display = 'block';
+                    } else if (screenName === 'waiting') {
+                        waitingAdminMenu.style.display = 'block';
+                    }
+                }
+    
+                // New function to show projector selection modal
+                async function showProjectorSelectionModal() {
+                    try {
+                        const response = await fetch('/api/projectors/available');
+                        const availableIds = await response.json();
+    
+                        availableProjectorsList.innerHTML = '';
+                        if (availableIds.length > 0) {
+                            noProjectorsMessage.style.display = 'none';
+                            availableIds.forEach(id => {
+                                const li = document.createElement('li');
+                                li.className = 'list-group-item list-group-item-action';
+                                li.textContent = `ID Proyektor: ${id}`;
+                                li.style.cursor = 'pointer';
+                                li.addEventListener('click', () => selectProjector(id));
+                                availableProjectorsList.appendChild(li);
+                            });
+                        } else {
+                            noProjectorsMessage.style.display = 'block';
+                        }
+                        projectorSelectionModal.show();
+                    } catch (error) {
+                        console.error('Error fetching available projectors:', error);
+                        alert('Gagal mengambil daftar proyektor yang tersedia.');
+                    }
+                }
+    
+                // New function to handle projector selection from modal
+                function selectProjector(projectorId) {
+                    selectedDeviceId = projectorId;
+                    projectorSelectionModal.hide();
+                    // After selecting a projector, create the loan with the stored student ID
+                    createLoan(scannedStudentId, 'Proyektor', selectedDeviceId);
+                }
+    
+                function resetUI() {
+                    if (eventSource) {
+                        eventSource.close();
+                        eventSource = null;
+                    }
+                    showScreen('perangkat');
+                    cardInput.value = '';
+                    selectedDeviceType = '';
+                    selectedDeviceId = '';
+                    scannedStudentId = '';
+                    activeLoan = null;
+                }
+    
+                // Initial setup
+                resetUI();
+            });
+        </script></body>
+</html>

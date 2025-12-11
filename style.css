@@ -1,0 +1,174 @@
+/* Custom styles can be added here if needed, but for now, we rely on Bootstrap. */
+
+.hidden {
+    display: none;
+}
+
+/* Styles from admin.html */
+:root {
+    --primary-color: #0d6efd;
+    --sidebar-bg: #ffffff;
+    --sidebar-link-color: #495057;
+    --sidebar-link-hover-bg: #f8f9fa;
+    --sidebar-link-active-color: #0d6efd;
+    --body-bg: #f4f7f6;
+    --navy-blue: #12375d;
+}
+
+body {
+    background-color: var(--body-bg);
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+/* --- Sidebar Styles --- */
+#sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: var(--sidebar-bg);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #dee2e6;
+    transition: width 0.3s ease-in-out;
+}
+
+#sidebar.collapsed {
+    width: 88px;
+    min-width: 88px;
+}
+
+#sidebar .sidebar-header {
+    padding: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+}
+
+#sidebar.collapsed .sidebar-header .navbar-brand span {
+    display: none;
+}
+#sidebar.collapsed .sidebar-header .bi-pc-display {
+     margin-right: 0;
+}
+
+#sidebar .nav-link {
+    padding: 0.75rem 1.5rem;
+    color: var(--sidebar-link-color);
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#sidebar.collapsed .nav-link {
+    padding-left: 1.7rem; /* Adjust padding for centered icon */
+}
+
+#sidebar .nav-link i {
+    margin-right: 1rem;
+    width: 20px;
+    text-align: center;
+    transition: margin-right 0.3s ease-in-out;
+}
+
+#sidebar.collapsed .nav-link i {
+    margin-right: 0;
+}
+
+#sidebar.collapsed .nav-link span {
+    display: none;
+}
+
+#sidebar .nav-link:hover {
+    background-color: var(--sidebar-link-hover-bg);
+    border-left-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+#sidebar .nav-link.active {
+    color: var(--primary-color);
+    border-left-color: var(--primary-color);
+    background-color: #e9ecef;
+    font-weight: 600;
+}
+
+/* --- Main Content Styles --- */
+#main-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* --- Responsive Media Queries --- */
+@media (max-width: 991.98px) {
+    #sidebar {
+        margin-left: -260px; /* Hide desktop sidebar on mobile */
+    }
+    #sidebar.collapsed {
+        margin-left: -88px;
+    }
+    #main-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* Custom Navy Blue Styles */
+.text-navy { color: var(--navy-blue) !important; }
+.bg-navy {
+    background-color: var(--navy-blue) !important;
+    color: #ffffff;
+}
+.btn-navy {
+    background-color: var(--navy-blue);
+    border-color: var(--navy-blue);
+    color: #ffffff;
+}
+.btn-navy:hover {
+    background-color: #0e2b46;
+    border-color: #0e2b46;
+}
+
+.table-dark.bg-navy {
+    background-color: var(--navy-blue) !important;
+}
+
+/* Styles from aturan.html */
+/* Custom Navbar Style - Reverted to original custom.css values */
+.navbar {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.navbar-brand {
+    font-weight: 700; /* Original value */
+    font-size: 1.5rem; /* Original value */
+    color: #12375d !important; /* Biru Navy */
+}
+.navbar-brand i {
+    color: #12375d !important; /* Mengatur warna ikon di brand */
+}
+.navbar .nav-link {
+    font-weight: 400; /* Original value */
+    color: #183c5b !important; /* Original --secondary-color */
+    transition: color 0.3s ease;
+    margin: 0 10px; /* Original value */
+}
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: #12375d !important; /* Biru Navy */
+}
+
+/* Custom Button Primary Style (jika ada) */
+.btn-primary {
+    background-color: #12375d; /* Biru Navy */
+    border-color: #12375d; /* Biru Navy */
+}
+.btn-primary:hover {
+    background-color: #0e2b46; /* Sedikit lebih gelap saat hover */
+    border-color: #0e2b46;
+}
